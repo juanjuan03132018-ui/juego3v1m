@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tres Verdades y Una Mentira - Sistemas del Cuerpo Humano</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .system-title {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .system-title h2 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .system-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .statements-container {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .statement-card {
+            padding: 25px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .statement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .statement-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            transform: scale(1.02);
+        }
+
+        .statement-card.correct {
+            border-color: #4caf50;
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            animation: correctPulse 0.6s ease;
+        }
+
+        .statement-card.incorrect {
+            border-color: #f44336;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .statement-text {
+            font-size: 1.15em;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .statement-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .result-icon {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            font-size: 2.5em;
+            display: none;
+        }
+
+        .statement-card.correct .result-icon.check,
+        .statement-card.incorrect .result-icon.cross {
+            display: block;
+            animation: popIn 0.4s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: translateY(-50%) scale(0); }
+            50% { transform: translateY(-50%) scale(1.2); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
+
+        .button {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .button-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .feedback.success {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            color: #2e7d32;
+            display: block;
+        }
+
+        .feedback.error {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #c62828;
+            display: block;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            font-size: 1em;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .game-over {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .game-over h2 {
+            color: #667eea;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 4em;
+            color: #764ba2;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .trophy {
+            font-size: 5em;
+            margin: 20px 0;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .difficulty-buttons {
+            display: grid;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .difficulty-button {
+            padding: 20px;
+            font-size: 1.3em;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .difficulty-easy {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        .difficulty-medium {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .difficulty-hard {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        }
+
+        .difficulty-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.3em;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.5s ease;
+        }
+
+        .footer .heart {
+            color: #ff6b6b;
+            animation: heartbeat 1.5s infinite;
+            display: inline-block;
+            font-size: 1.2em;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+        }
+
+        .footer .name {
+            font-weight: bold;
+            color: #ffd93d;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .game-card {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .statement-text {
+                font-size: 1em;
+            }
+
+            .footer {
+                font-size: 1.1em;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-card" id="gameCard">
+            <!-- El contenido se generará dinámicamente con JavaScript -->
+        </div>
+        <div class="footer">
+            Hecho con <span class="heart">❤️</span> para <span class="name">Valaria</span>
+        </div>
+    </div>
+
+    <script>
+        const gameData = {
+            easy: [
+                {
+                    system: "Sistema Circulatorio",
+                    icon: "❤️",
+                    statements: [
+                        { text: "El corazón bombea sangre a todo el cuerpo", truth: true },
+                        { text: "Las arterias llevan sangre desde el corazón", truth: true },
+                        { text: "Las venas son de color azul dentro del cuerpo", truth: false },
+                        { text: "El corazón late aproximadamente 100,000 veces al día", truth: true }
+                    ],
+                    explanation: "Las venas NO son azules dentro del cuerpo. Se ven azules a través de la piel debido a cómo la luz penetra y se refleja en la piel, pero la sangre venosa es en realidad de color rojo oscuro."
+                },
+                {
+                    system: "Sistema Respiratorio",
+                    icon: "🫁",
+                    statements: [
+                        { text: "Los pulmones son órganos pares", truth: true },
+                        { text: "Al respirar intercambiamos oxígeno por dióxido de carbono", truth: true },
+                        { text: "El pulmón derecho tiene 4 lóbulos y el izquierdo 3", truth: false },
+                        { text: "La tráquea conecta la garganta con los pulmones", truth: true }
+                    ],
+                    explanation: "El pulmón derecho tiene 3 lóbulos y el izquierdo solo 2. El izquierdo es más pequeño para dar espacio al corazón."
+                },
+                {
+                    system: "Sistema Digestivo",
+                    icon: "🍎",
+                    statements: [
+                        { text: "El estómago descompone los alimentos con ácido", truth: true },
+                        { text: "El intestino delgado mide aproximadamente 6-7 metros", truth: true },
+                        { text: "El hígado es el órgano más pequeño del cuerpo", truth: false },
+                        { text: "La digestión comienza en la boca", truth: true }
+                    ],
+                    explanation: "El hígado es el órgano interno MÁS GRANDE del cuerpo, pesando aproximadamente 1.5 kg. La piel es el órgano más grande si consideramos órganos externos."
+                },
+                {
+                    system: "Sistema Óseo",
+                    icon: "🦴",
+                    statements: [
+                        { text: "Los huesos están compuestos principalmente de calcio", truth: true },
+                        { text: "El cuerpo humano tiene 206 huesos en la edad adulta", truth: true },
+                        { text: "Los huesos dejan de crecer a los 12 años", truth: false },
+                        { text: "El hueso más pequeño está en el oído", truth: true }
+                    ],
+                    explanation: "Los huesos NO dejan de crecer a los 12 años. Continúan creciendo hasta aproximadamente los 18-25 años, dependiendo del hueso y de factores individuales como el género."
+                },
+                {
+                    system: "Sistema Muscular",
+                    icon: "💪",
+                    statements: [
+                        { text: "El músculo cardíaco trabaja de forma involuntaria", truth: true },
+                        { text: "Los músculos se conectan a los huesos mediante tendones", truth: true },
+                        { text: "Todos los músculos del cuerpo son voluntarios", truth: false },
+                        { text: "El ejercicio fortalece los músculos", truth: true }
+                    ],
+                    explanation: "NO todos los músculos son voluntarios. Existen músculos involuntarios como el músculo cardíaco y los músculos lisos de los órganos internos que funcionan automáticamente sin control consciente."
+                },
+                {
+                    system: "Sistema Nervioso",
+                    icon: "🧠",
+                    statements: [
+                        { text: "El cerebro es el centro de control del cuerpo", truth: true },
+                        { text: "Los nervios transmiten señales eléctricas", truth: true },
+                        { text: "El cerebro representa el 50% del peso corporal", truth: false },
+                        { text: "La médula espinal es parte del sistema nervioso central", truth: true }
+                    ],
+                    explanation: "El cerebro NO representa el 50% del peso corporal. Representa aproximadamente el 2% del peso corporal total, aunque consume alrededor del 20% de la energía del cuerpo."
+                }
+            ],
+            medium: [
+                {
+                    system: "Sistema Nervioso",
+                    icon: "🧠",
+                    statements: [
+                        { text: "El cerebro consume aproximadamente el 20% de la energía del cuerpo", truth: true },
+                        { text: "Las neuronas pueden regenerarse rápidamente como otras células", truth: false },
+                        { text: "La médula espinal transmite señales entre el cerebro y el cuerpo", truth: true },
+                        { text: "Los impulsos nerviosos pueden viajar a más de 400 km/h", truth: true }
+                    ],
+                    explanation: "Las neuronas tienen una capacidad de regeneración muy limitada, especialmente en el sistema nervioso central. Una vez dañadas, muchas no se recuperan, lo que hace que las lesiones cerebrales y de médula espinal sean tan graves."
+                },
+                {
+                    system: "Sistema Muscular",
+                    icon: "💪",
+                    statements: [
+                        { text: "El cuerpo humano tiene más de 600 músculos", truth: true },
+                        { text: "El músculo más fuerte del cuerpo es el bíceps", truth: false },
+                        { text: "Los músculos representan aproximadamente el 40% del peso corporal", truth: true },
+                        { text: "El músculo cardíaco nunca descansa", truth: true }
+                    ],
+                    explanation: "El músculo MÁS FUERTE del cuerpo humano es el masetero (músculo de la mandíbula), que puede ejercer una fuerza de hasta 200 kg. El bíceps es fuerte pero no el más fuerte."
+                },
+                {
+                    system: "Sistema Óseo",
+                    icon: "🦴",
+                    statements: [
+                        { text: "Los bebés nacen con aproximadamente 300 huesos", truth: true },
+                        { text: "El fémur es el hueso más largo y fuerte del cuerpo", truth: true },
+                        { text: "Los adultos tienen exactamente 200 huesos", truth: false },
+                        { text: "Los huesos están vivos y se regeneran constantemente", truth: true }
+                    ],
+                    explanation: "Los adultos tienen 206 huesos, no 200. Algunos huesos se fusionan durante el crecimiento, por eso los bebés tienen más huesos (alrededor de 300) que los adultos."
+                },
+                {
+                    system: "Sistema Circulatorio",
+                    icon: "❤️",
+                    statements: [
+                        { text: "El corazón tiene cuatro cámaras: dos aurículas y dos ventrículos", truth: true },
+                        { text: "Los capilares son los vasos sanguíneos más grandes", truth: false },
+                        { text: "La aorta es la arteria más grande del cuerpo", truth: true },
+                        { text: "El corazón puede latir fuera del cuerpo si tiene oxígeno", truth: true }
+                    ],
+                    explanation: "Los capilares son los vasos sanguíneos MÁS PEQUEÑOS, no los más grandes. Son tan delgados que permiten el intercambio de nutrientes y gases entre la sangre y los tejidos."
+                },
+                {
+                    system: "Sistema Tegumentario (Piel)",
+                    icon: "🤚",
+                    statements: [
+                        { text: "La piel es el órgano más grande del cuerpo", truth: true },
+                        { text: "La piel se renueva completamente cada 28 días aproximadamente", truth: true },
+                        { text: "La piel humana es completamente impermeable al agua", truth: false },
+                        { text: "Las huellas dactilares son únicas en cada persona", truth: true }
+                    ],
+                    explanation: "La piel NO es completamente impermeable al agua. Aunque es resistente al agua, puede absorber líquidos, especialmente a través de los folículos pilosos y las glándulas sudoríparas. Por eso los dedos se arrugan al estar en el agua."
+                },
+                {
+                    system: "Sistema Linfático",
+                    icon: "🔬",
+                    statements: [
+                        { text: "El sistema linfático ayuda a defender el cuerpo de infecciones", truth: true },
+                        { text: "Los ganglios linfáticos filtran la linfa", truth: true },
+                        { text: "El sistema linfático tiene un órgano que bombea como el corazón", truth: false },
+                        { text: "El bazo es parte del sistema linfático", truth: true }
+                    ],
+                    explanation: "El sistema linfático NO tiene un órgano que bombee como el corazón. La linfa se mueve a través del sistema mediante la contracción muscular y los movimientos del cuerpo, no por un bomba central."
+                }
+            ],
+            hard: [
+                {
+                    system: "Sistema Endocrino",
+                    icon: "⚗️",
+                    statements: [
+                        { text: "La glándula pituitaria se conoce como la 'glándula maestra'", truth: true },
+                        { text: "La insulina es producida por el hígado", truth: false },
+                        { text: "Las hormonas viajan por el torrente sanguíneo", truth: true },
+                        { text: "La tiroides regula el metabolismo", truth: true }
+                    ],
+                    explanation: "La insulina es producida por el PÁNCREAS, específicamente por las células beta de los islotes de Langerhans. El páncreas, no el hígado, es el responsable de regular los niveles de azúcar en sangre mediante la insulina y el glucagón."
+                },
+                {
+                    system: "Sistema Inmunológico",
+                    icon: "🛡️",
+                    statements: [
+                        { text: "Los glóbulos blancos defienden al cuerpo de infecciones", truth: true },
+                        { text: "El bazo filtra la sangre y recicla glóbulos rojos viejos", truth: true },
+                        { text: "Las amígdalas producen insulina para regular el azúcar", truth: false },
+                        { text: "La médula ósea produce células sanguíneas", truth: true }
+                    ],
+                    explanation: "Las amígdalas NO producen insulina. Son parte del sistema linfático y ayudan a combatir infecciones produciendo linfocitos. La insulina es producida por el páncreas."
+                },
+                {
+                    system: "Sistema Excretor",
+                    icon: "💧",
+                    statements: [
+                        { text: "Los riñones filtran aproximadamente 180 litros de sangre al día", truth: true },
+                        { text: "La vejiga puede almacenar hasta 2 litros de orina cómodamente", truth: false },
+                        { text: "La piel también forma parte del sistema excretor", truth: true },
+                        { text: "Las nefronas son las unidades funcionales del riñón", truth: true }
+                    ],
+                    explanation: "La vejiga puede almacenar cómodamente entre 400-600 ml de orina, no 2 litros. Aunque puede expandirse más en situaciones extremas, 2 litros sería extremadamente doloroso y peligroso."
+                },
+                {
+                    system: "Sistema Reproductor",
+                    icon: "👶",
+                    statements: [
+                        { text: "Los espermatozoides son las células más pequeñas del cuerpo masculino", truth: true },
+                        { text: "El óvulo es la célula más grande del cuerpo humano", truth: true },
+                        { text: "Las mujeres nacen con todos los óvulos que tendrán en su vida", truth: true },
+                        { text: "Los ovarios producen testosterona en grandes cantidades", truth: false }
+                    ],
+                    explanation: "Los ovarios NO producen testosterona en grandes cantidades. Aunque producen pequeñas cantidades de testosterona, su función principal es producir estrógeno y progesterona. Los testículos son los que producen testosterona en grandes cantidades."
+                },
+                {
+                    system: "Sistema Cardiovascular Avanzado",
+                    icon: "💓",
+                    statements: [
+                        { text: "El corazón late aproximadamente 3 mil millones de veces en una vida promedio", truth: true },
+                        { text: "Las arterias coronarias suministran sangre al músculo cardíaco", truth: true },
+                        { text: "La sangre tarda menos de 20 segundos en circular por todo el cuerpo", truth: true },
+                        { text: "El ventrículo izquierdo es más débil que el derecho", truth: false }
+                    ],
+                    explanation: "El ventrículo izquierdo es MÁS FUERTE que el derecho, no más débil. Debe bombear sangre a todo el cuerpo, mientras que el ventrículo derecho solo la bombea a los pulmones, por lo que necesita paredes más gruesas y potentes."
+                },
+                {
+                    system: "Sistema Nervioso Autónomo",
+                    icon: "⚡",
+                    statements: [
+                        { text: "El sistema nervioso simpático prepara el cuerpo para 'luchar o huir'", truth: true },
+                        { text: "El sistema nervioso parasimpático ayuda en la relajación y digestión", truth: true },
+                        { text: "El nervio vago es el nervio craneal más corto", truth: false },
+                        { text: "El hipotálamo controla funciones autónomas como la temperatura corporal", truth: true }
+                    ],
+                    explanation: "El nervio vago es el nervio craneal MÁS LARGO, no el más corto. Se extiende desde el tronco encefálico hasta el abdomen, inervando muchos órganos vitales como el corazón, pulmones y sistema digestivo."
+                }
+            ]
+        };
+
+        let currentDifficulty = '';
+        let currentLevel = 0;
+        let score = 0;
+        let selectedStatement = null;
+        let answered = false;
+
+        function showStartScreen() {
+            const gameCard = document.getElementById('gameCard');
+            gameCard.innerHTML = `
+                <div class="start-screen">
+                    <h2>🎮 Tres Verdades y Una Mentira 🎮</h2>
+                    <p><strong>Sistemas del Cuerpo Humano</strong></p>
+                    <p>En cada nivel encontrarás 4 afirmaciones sobre un sistema del cuerpo humano. ¡Tu misión es identificar cuál es la MENTIRA!</p>
+                    <p>Selecciona la dificultad para comenzar:</p>
+                    <div class="difficulty-buttons">
+                        <button class="difficulty-button difficulty-easy" onclick="startGame('easy')">
+                            😊 FÁCIL<br><small>6 Niveles - Sistemas Básicos</small>
+                        </button>
+                        <button class="difficulty-button difficulty-medium" onclick="startGame('medium')">
+                            🤔 MEDIO<br><small>6 Niveles - Desafío Moderado</small>
+                        </button>
+                        <button class="difficulty-button difficulty-hard" onclick="startGame('hard')">
+                            🔥 DIFÍCIL<br><small>6 Niveles - Experto</small>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startGame(difficulty) {
+            currentDifficulty = difficulty;
+            currentLevel = 0;
+            score = 0;
+            loadLevel();
+        }
+
+        function loadLevel() {
+            answered = false;
+            selectedStatement = null;
+            const levels = gameData[currentDifficulty];
+            
+            if (currentLevel >= levels.length) {
+                showGameOver();
+                return;
+            }
+
+            const level = levels[currentLevel];
+            const progress = ((currentLevel + 1) / levels.length) * 100;
+            
+            const gameCard = document.getElementById('gameCard');
+            gameCard.innerHTML = `
+                <div class="header">
+                    <h1>🎯 Tres Verdades y Una Mentira</h1>
+                    <p>Encuentra la afirmación FALSA</p>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Nivel</div>
+                        <div class="stat-value">${currentLevel + 1}/${levels.length}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Puntuación</div>
+                        <div class="stat-value">${score}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Dificultad</div>
+                        <div class="stat-value">${currentDifficulty.toUpperCase()}</div>
+                    </div>
+                </div>
+
+                <div class="system-title">
+                    <div class="system-icon">${level.icon}</div>
+                    <h2>${level.system}</h2>
+                </div>
+
+                <div class="statements-container" id="statementsContainer">
+                    ${level.statements.map((stmt, index) => `
+                        <div class="statement-card" onclick="selectStatement(${index})">
+                            <div class="statement-label">Afirmación ${index + 1}</div>
+                            <div class="statement-text">${stmt.text}</div>
+                            <span class="result-icon check">✅</span>
+                            <span class="result-icon cross">❌</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="button button-primary" onclick="checkAnswer()" id="submitBtn" disabled>
+                    Verificar Respuesta
+                </button>
+
+                <div class="feedback" id="feedback"></div>
+            `;
+        }
+
+        function selectStatement(index) {
+            if (answered) return;
+
+            const cards = document.querySelectorAll('.statement-card');
+            cards.forEach(card => card.classList.remove('selected'));
+            cards[index].classList.add('selected');
+            
+            selectedStatement = index;
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function checkAnswer() {
+            if (selectedStatement === null || answered) return;
+
+            answered = true;
+            const level = gameData[currentDifficulty][currentLevel];
+            const cards = document.querySelectorAll('.statement-card');
+            const feedback = document.getElementById('feedback');
+            
+            // Marcar todas las afirmaciones
+            level.statements.forEach((stmt, index) => {
+                if (stmt.truth) {
+                    cards[index].classList.add('correct');
+                } else {
+                    cards[index].classList.add('incorrect');
+                }
+            });
+
+            // Verificar si la respuesta del usuario es correcta
+            if (!level.statements[selectedStatement].truth) {
+                // Respuesta correcta
+                score += 100;
+                feedback.className = 'feedback success';
+                feedback.innerHTML = `
+                    <div>🎉 ¡CORRECTO! Has encontrado la mentira 🎉</div>
+                    <div class="explanation">
+                        💡 <strong>Explicación:</strong> ${level.explanation}
+                    </div>
+                `;
+            } else {
+                // Respuesta incorrecta
+                feedback.className = 'feedback error';
+                feedback.innerHTML = `
+                    <div>❌ Incorrecto. Esa afirmación es VERDADERA</div>
+                    <div class="explanation">
+                        💡 <strong>Explicación:</strong> ${level.explanation}
+                    </div>
+                `;
+            }
+
+            // Actualizar puntuación en pantalla
+            const scoreDisplay = document.querySelector('.stats .stat-item:nth-child(2) .stat-value');
+            if (scoreDisplay) {
+                scoreDisplay.textContent = score;
+            }
+
+            // Cambiar botón
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.textContent = 'Siguiente Nivel ➡️';
+            submitBtn.onclick = nextLevel;
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            loadLevel();
+        }
+
+        function showGameOver() {
+            const maxScore = gameData[currentDifficulty].length * 100;
+            const percentage = (score / maxScore) * 100;
+            let trophy = '🥉';
+            let message = '¡Buen intento!';
+
+            if (percentage === 100) {
+                trophy = '🏆';
+                message = '¡PERFECTO! ¡Eres un experto!';
+            } else if (percentage >= 66) {
+                trophy = '🥇';
+                message = '¡Excelente trabajo!';
+            } else if (percentage >= 33) {
+                trophy = '🥈';
+                message = '¡Bien hecho!';
+            }
+
+            const gameCard = document.getElementById('gameCard');
+            gameCard.innerHTML = `
+                <div class="game-over">
+                    <h2>🎊 ¡Juego Completado! 🎊</h2>
+                    <div class="trophy">${trophy}</div>
+                    <div class="final-score">${score} / ${maxScore}</div>
+                    <h3 style="color: #764ba2; margin: 20px 0;">${message}</h3>
+                    <p style="font-size: 1.2em; color: #666; margin: 20px 0;">
+                        Precisión: ${percentage.toFixed(0)}%
+                    </p>
+                    <div style="margin-top: 30px;">
+                        <button class="button button-primary" onclick="showStartScreen()" style="margin-bottom: 10px;">
+                            🔄 Jugar de Nuevo
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Iniciar el juego
+        showStartScreen();
+    </script>
+</body>
+</html>
